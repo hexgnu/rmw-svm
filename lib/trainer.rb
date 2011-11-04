@@ -1,12 +1,13 @@
 require 'java'
 require 'tempfile'
-require 'libsvm.jar'
+require File.join(File.dirname(__FILE__), 'libsvm.jar')
 
 class SvmTrain
   include Svm::Helper
-  attr_reader :model
+  attr_reader :model, :mapping
   def initialize(problem)
     @max_index = 0
+    @mapping = {}
     @problem = Java::libsvm::svm_problem.new
     @problem.l = problem.length
     @problem.x = Array.new(@problem.l)
@@ -21,34 +22,14 @@ class SvmTrain
     @model = Java::libsvm::svm.svm_train(@problem, param)
   end
   
-  def save
-    @tempfile = Tempfile.new("model")
-    Java::libsvm::svm.svm_save_model(@tempfile.path, @model)
-    @tempfile.path
-  end
-  
   def param
     if @param.nil?
       @param = Java::libsvm::svm_parameter.new
-      @param.svm_type = Java::libsvm::svm_parameter::C_SVC
-      @param.kernel_type = Java::libsvm::svm_parameter::RBF
-      @param.degree = 3
-      @param.gamma = 0
-      @param.coef0 = 0
-      @param.nu = 0.5
-      @param.cache_size = 100
-      @param.C = 1
-      @param.eps = 1e-13
-      @param.p = 0.1
-      @param.shrinking = 1
-      @param.probability = 0
-      @param.nr_weight = 0
-      @param.weight_label = []
-      @param.weight = []
+      yml = YAML::load(File.open(File.join(File.dirname(__FILE__), '../config/defaults.yml')))
+      yml.each do |config_param, value|
+        @param.send("#{config_param}=", value)
+      end
     end
     @param
   end
 end
-
-# problem = [[5, {1 => 1, 2 => 1}], [3, {3 => 1, 4 => 1}], [2, {5 => 1, 6 => 1}]]
-#
