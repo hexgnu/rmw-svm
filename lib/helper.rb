@@ -2,7 +2,6 @@ module Svm
   module Helper
     def update_mapping!(hash)
       if @mapping.nil?
-        puts "Nil mapping"
         @mapping = {} 
       end
       
@@ -10,7 +9,6 @@ module Svm
         if !@mapping.has_key?(k)
           max = @mapping.values.max || 0
           @mapping[k] = max + 1
-          puts @mapping.inspect
         end
       end
     end
