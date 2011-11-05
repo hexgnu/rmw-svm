@@ -3,16 +3,21 @@ require File.join(File.dirname(__FILE__), 'trainer')
 require File.join(File.dirname(__FILE__), 'predictor')
 require 'yaml'
 
-__END__
-problem = [
-  [5, {:campy => 1, :year => 1987}], 
-  [3, {:mem => 1, :year => 1978}], 
-  [2, {:teens => 1, :year => 1988}]
-]
-svm_model = SvmTrain.new(problem)
-svm_predictor = SvmPrediction.new(svm_model.model)
 
-
-(1978..1990).each do |yr|
-  puts [yr, svm_predictor.predict(:year => yr)].join(" >> ")
+module Svm
+  extend self
+  
+  def example
+    data = [
+      [5, {:year => 1987, :campy => 1, :horror => 1}], # Ghost Fever
+      [3, {:year => 1978, :man_eating_monsters => 1, :horror => 1}], # Attack of the Killer Tomatoes
+      [2, {:year => 1988, :teens => 1}] #The Blob
+    ]
+    svm_predictor = SvmPrediction.from_svm_problem(data)
+    
+    svm_predictor.predict(:year => 1988) #=> 2.0
+    svm_predictor.predict(:year => 1987) #=> 5.0
+    svm_predictor.predict(:year => 1985) #=> 5.0
+    svm_predictor.predict(:year => 1987, :teens => 1) #=> 2.0
+  end
 end

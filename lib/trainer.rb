@@ -1,24 +1,29 @@
 require 'java'
-require 'tempfile'
 require File.join(File.dirname(__FILE__), 'libsvm.jar')
 
 class SvmTrain
   include Svm::Helper
-  attr_reader :model, :mapping
-  def initialize(problem)
+  attr_reader :model, :mapping, :min, :max
+  def initialize(data)
+    @min, @max = scale(data)
     @max_index = 0
     @mapping = {}
+    
     @problem = Java::libsvm::svm_problem.new
-    @problem.l = problem.length
+    @problem.l = data.length
+    
     @problem.x = Array.new(@problem.l)
     @problem.y = Array.new(@problem.l)
-    problem.each_with_index do |row,index|
+    
+    data.each_with_index do |row,index|
       @problem.x[index] = nodes(row[1])
       @problem.y[index] = row.first
     end
+    
     if param.gamma == 0 && @max_index > 0
       param.gamma = 1.0 / @max_index
     end
+    
     @model = Java::libsvm::svm.svm_train(@problem, param)
   end
   
@@ -31,5 +36,9 @@ class SvmTrain
       end
     end
     @param
+  end
+  
+  def scale(data)
+    @min, @max = data.map {|row| row[1].values }.flatten.minmax
   end
 end

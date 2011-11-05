@@ -1,0 +1,16 @@
+--- 
+:svm_type: 0
+:kernel_type: 2
+:degree: 3
+:gamma: 0
+:coef0: 0
+:nu: 0.5
+:cache_size: 100
+:C: 1
+:eps: 1.0e-13
+:p: 0.1
+:shrinking: 1
+:probability: 0
+:nr_weight: 0
+:weight_label: []
+:weight: []
