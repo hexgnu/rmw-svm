@@ -19,12 +19,26 @@ module Svm
       b = 1 - (2.0 * @max) / (@max - @min)
       svm_hash.map do |i,v|
         node = Java::libsvm::svm_node.new
+        value = coerce(v)
+        
+        
         node.index = @mapping[i]
         if @mapping[i] > (@max_index || 0)
           @max_index = @mapping[i] 
         end
-        node.value = m * v + b
+
+        node.value = m * value + b
         node
+      end
+    end
+    
+    def coerce(value)
+      if value.is_a?(TrueClass)
+        1
+      elsif value.is_a?(FalseClass)
+        0
+      else
+        value
       end
     end
   end

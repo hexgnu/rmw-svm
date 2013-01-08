@@ -12,17 +12,22 @@ class SvmTrain
     @problem = Java::libsvm::svm_problem.new
     @problem.l = data.length
     
-    @problem.x = Array.new(@problem.l)
-    @problem.y = Array.new(@problem.l)
+    x = []
+    y = []
     
-    data.each_with_index do |row,index|
-      @problem.x[index] = nodes(row[1])
-      @problem.y[index] = row.first
+    data.each do |row|
+      x << nodes(row[1])
+      y << row.first
     end
+    
+    @problem.x = x
+    @problem.y = y
     
     if param.gamma == 0 && @max_index > 0
       param.gamma = 1.0 / @max_index
     end
+    
+    puts @max_index
     
     @model = Java::libsvm::svm.svm_train(@problem, param)
   end
@@ -39,6 +44,12 @@ class SvmTrain
   end
   
   def scale(data)
-    @min, @max = data.map {|row| row[1].values }.flatten.minmax
+    vals = data.map do |row| 
+      row[1].values.map do |val|
+        coerce(val)
+      end
+    end
+  
+    @min, @max = vals.flatten.minmax
   end
 end

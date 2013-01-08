@@ -9,5 +9,5 @@ An example would be:
 
 `problem = [[5, {1 => 1, 4 => 1987}], [3, {2 => 1, 4 => 1978}], [2, {3 => 1, 4 => 1988}]]`
 `svm_model = SvmTrain.new(problem)`
-`svm_predictor = SvmPrediction.new(svm_model.model)`
-`svm_predictor.predict( 1 => 1, 2 => 1 ) # yields 5 stars`
+`svm_predictor = SvmPrediction.new(svm_model)`
+`svm_predictor.predict(1 => 1) # yields 5 stars`
